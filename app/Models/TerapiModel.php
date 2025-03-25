@@ -27,6 +27,36 @@ class TerapiModel extends Model
         return $query->get()->getResultArray();
     }
 
+    public function getAllTerapiWithPasienAndUsersdata($userId)
+    {
+        $query = $this->select('terapi.*, pasien.nama, pasien.j_kelamin, pasien.alamat, users.username')
+            ->join('pasien', 'terapi.id_pasien = pasien.id')
+            ->join('users', 'terapi.id_fisioterapis = users.id')
+            ->where('terapi.verifi', true);
+
+        // Jika userId bukan 1, tambahkan filter berdasarkan id_fisioterapis
+        if ($userId != 1) {
+            $query->where('terapi.id_fisioterapis', $userId);
+        }
+
+        return $query->get()->getResultArray();
+    }
+
+    public function getAllTerapiWithPasienAndUsersVerify($userId)
+    {
+        $query = $this->select('terapi.*, pasien.nama, pasien.j_kelamin, pasien.alamat, users.username')
+            ->join('pasien', 'terapi.id_pasien = pasien.id')
+            ->join('users', 'terapi.id_fisioterapis = users.id')
+            ->where('terapi.verifi', true);
+
+        // Jika userId bukan 1, tambahkan filter berdasarkan id_fisioterapis
+        if ($userId != 1) {
+            $query->where('terapi.id_fisioterapis', $userId);
+        }
+
+        return $query->get()->getResultArray();
+    }
+
     // Add this method to your TerapiModel
     public function searchTerapi($keyword, $userId)
     {
@@ -34,6 +64,34 @@ class TerapiModel extends Model
             ->join('pasien', 'terapi.id_pasien = pasien.id')
             ->join('users', 'terapi.id_fisioterapis = users.id')
             ->where('terapi.verifi', false);
+
+
+        // Add search conditions
+        $query->groupStart()
+            ->like('pasien.nama', $keyword)
+            ->orLike('terapi.no_pendaftaran', $keyword)
+            ->orLike('pasien.alamat', $keyword)
+            ->groupEnd();
+
+        // Apply user filtering
+        if ($userId != 1) {
+            // If not admin (assuming user ID 1 is admin)
+            $query->where('terapi.id_fisioterapis', $userId);
+        }
+
+        // Sort by date
+        $query->orderBy('terapi.tanggal', 'DESC');
+
+        // Execute query and return results
+        return $query->findAll();
+    }
+
+    public function searchTerapidata($keyword, $userId)
+    {
+        $query = $this->select('terapi.*, pasien.nama, pasien.j_kelamin, pasien.alamat, users.username')
+            ->join('pasien', 'terapi.id_pasien = pasien.id')
+            ->join('users', 'terapi.id_fisioterapis = users.id')
+            ->where('terapi.verifi', true);
 
 
         // Add search conditions

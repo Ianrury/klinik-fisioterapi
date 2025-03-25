@@ -400,4 +400,42 @@ class Home extends BaseController
         ]);
     }
 
+    public function data_pasien(){
+        $user = auth()->user(); // Ambil user yang login
+        $userId = $user->id; // Ambil ID user
+        $allTerapi = $this->terapiModel->getAllTerapiWithPasienAndUsersVerify($userId);
+
+        // Pastikan $pasiens dikirim sebagai array asosiatif
+        return view('pasiens/data_pasien', ['terapis' => $allTerapi]);
+    }
+
+    public function search_pasien()
+    {
+        // Make sure this is an AJAX request
+        if (!$this->request->isAJAX()) {
+            return redirect()->back();
+        }
+
+        $keyword = $this->request->getPost('keyword');
+        $user = auth()->user(); // Get logged-in user
+        $userId = $user->id; // Get user ID
+
+        // Search logic - modify this based on your needs
+        if (!empty($keyword)) {
+            // Search by patient name, registration number, or address
+            $terapis = $this->terapiModel->searchTerapidata($keyword, $userId);
+        } else {
+            // If keyword is empty, return all data
+            $terapis = $this->terapiModel->getAllTerapiWithPasienAndUsersdata($userId);
+            // dd($terapis);
+        }
+
+        // Load view with search results
+        $data = [
+            'terapis' => $terapis
+        ];
+        // Return only the terapis cards HTML
+        return view('partials/terapi_cards', $data);
+    }
+
 }
