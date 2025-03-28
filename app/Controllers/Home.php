@@ -435,7 +435,7 @@ class Home extends BaseController
             'terapis' => $terapis
         ];
         // Return only the terapis cards HTML
-        return view('partials/terapi_cards', $data);
+        return view('partials/detail_pasien', $data);
     }
 
 }
