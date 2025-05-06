@@ -13,7 +13,7 @@ $routes->post('/register-user', 'Home::register', ['filter' => 'role:admin']);
 $routes->get('/create-rm', 'Home::createRm', ['filter' => 'role:admin']);
 $routes->post('/store', 'Home::store', ['filter' => 'role:admin']);
 
-$routes->get('/pasiens', 'Home::pasien', ['filter' => 'role:admin']);
+$routes->get('/pasiens', 'Home::pasien');
 $routes->post('/pasiens/store', 'Home::store_pasien', ['filter' => 'role:admin']);
 $routes->get('/pasiens/create', 'Home::create_pasien', ['filter' => 'role:admin']);
 $routes->get('/pasiens/edit/(:num)', 'Home::edit_pasien/$1', ['filter' => 'role:admin']);
