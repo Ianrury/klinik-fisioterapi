@@ -27,6 +27,58 @@ class TerapiModel extends Model
         return $query->get()->getResultArray();
     }
 
+    public function getAllTerapiWithPasienAndUsersdata($userId)
+    {
+        // Subquery untuk mendapatkan ID terapi terbaru per pasien
+        $subquery = $this->select('MAX(id) as id')
+            ->where('verifi', true)
+            ->groupBy('id_pasien')
+            ->get()
+            ->getResultArray();
+
+        // Ambil hanya ID terapi terbaru dari hasil subquery
+        $latestTerapiIds = array_column($subquery, 'id');
+
+        // Query utama untuk mengambil detail terapi berdasarkan subquery
+        $query = $this->select('terapi.*, pasien.nama, pasien.j_kelamin, pasien.alamat, users.username')
+            ->join('pasien', 'terapi.id_pasien = pasien.id')
+            ->join('users', 'terapi.id_fisioterapis = users.id')
+            ->where('terapi.verifi', true)
+            ->whereIn('terapi.id', $latestTerapiIds);
+
+        // Jika userId bukan admin (1), tambahkan filter berdasarkan id_fisioterapis
+        if ($userId != 1) {
+            $query->where('terapi.id_fisioterapis', $userId);
+        }
+
+        return $query->get()->getResultArray();
+    }
+
+
+    public function getAllTerapiWithPasienAndUsersVerify($userId)
+    {
+        $db = \Config\Database::connect(); // Koneksi database manual
+
+        // Subquery untuk mendapatkan terapi terbaru per pasien
+        $subquery = "(SELECT MAX(id) FROM terapi WHERE verifi = 1 GROUP BY id_pasien)";
+
+        // Query utama untuk mengambil detail terapi berdasarkan subquery
+        $builder = $db->table('terapi')
+            ->select('terapi.*, pasien.nama, pasien.j_kelamin, pasien.alamat, users.username')
+            ->join('pasien', 'terapi.id_pasien = pasien.id')
+            ->join('users', 'terapi.id_fisioterapis = users.id')
+            ->where("terapi.id IN $subquery"); // Gunakan subquery sebagai filter
+
+        // Jika userId bukan 1, tambahkan filter berdasarkan id_fisioterapis
+        if ($userId != 1) {
+            $builder->where('terapi.id_fisioterapis', $userId);
+        }
+
+        return $builder->get()->getResultArray();
+    }
+
+
+
     // Add this method to your TerapiModel
     public function searchTerapi($keyword, $userId)
     {
@@ -55,6 +107,45 @@ class TerapiModel extends Model
         // Execute query and return results
         return $query->findAll();
     }
+
+    public function searchTerapidata($keyword, $userId)
+    {
+        // Subquery untuk mendapatkan terapi terbaru per pasien
+        $subquery = $this->select('MAX(id) as id')
+            ->where('verifi', true)
+            ->groupBy('id_pasien')
+            ->get()
+            ->getResultArray();
+
+        // Ambil hanya ID terapi terbaru dari hasil subquery
+        $latestTerapiIds = array_column($subquery, 'id');
+
+        // Query utama untuk mengambil detail terapi berdasarkan ID dari subquery
+        $query = $this->select('terapi.*, pasien.nama, pasien.j_kelamin, pasien.alamat, users.username')
+            ->join('pasien', 'terapi.id_pasien = pasien.id')
+            ->join('users', 'terapi.id_fisioterapis = users.id')
+            ->where('terapi.verifi', true)
+            ->whereIn('terapi.id', $latestTerapiIds);
+
+        // Tambahkan kondisi pencarian
+        $query->groupStart()
+            ->like('pasien.nama', $keyword)
+            ->orLike('terapi.no_pendaftaran', $keyword)
+            ->orLike('pasien.alamat', $keyword)
+            ->groupEnd();
+
+        // Jika userId bukan admin (1), filter berdasarkan id_fisioterapis
+        if ($userId != 1) {
+            $query->where('terapi.id_fisioterapis', $userId);
+        }
+
+        // Urutkan berdasarkan tanggal terbaru
+        $query->orderBy('terapi.tanggal', 'DESC');
+
+        // Jalankan query dan kembalikan hasilnya
+        return $query->get()->getResultArray();
+    }
+
 
     public function getAllTerapiWithPasienAndUsersdetail($id)
     {
