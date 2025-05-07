@@ -56,7 +56,7 @@ List Pasien
 <?php if (empty($terapis)): ?>
     <div class="bg-white p-6 rounded-lg shadow-lg my-5">
         <div class="text-center">
-            <h1 class="text-xl font-semibold">Tidak Ada Data Rekam Medis</h1>
+            <h1 class="text-xl font-semibold">Tidak Ada Antrian Pasien</h1>
         </div>
     </div>
 <?php else: ?>
