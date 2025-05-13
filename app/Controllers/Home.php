@@ -80,28 +80,30 @@ class Home extends BaseController
     {
         try {
             $id_pasien = $this->request->getPost('id_pasien');
+            $id_fisioterapis = $this->request->getPost('id_fisioterapis');
+            $tanggal = $this->request->getPost('tanggal');
 
-            $getLatestTerapi = $this->terapiModel->getLatestTherapy();
-            $noPendaftaran = 0;
-
+            // Cek apakah pasien sudah punya kunjungan yang belum diverifikasi
             $cekKunjungan = $this->terapiModel->getTerapiByNoPendaftaran($id_pasien);
-
             if ($cekKunjungan != null) {
-                return redirect()->back()->with('error', 'Kunjungan sebelumnya belum tertangani. lakukan tindakan atau hapus dari antrian!');
+                return redirect()->back()->with('error', 'Kunjungan sebelumnya belum tertangani. Lakukan tindakan atau hapus dari antrian!');
             }
 
-            if ($getLatestTerapi == null) {
-                $noPendaftaran = 1;
-            } else {
-                $noPendaftaran = $getLatestTerapi['no_pendaftaran'] + 1;
+            // Ambil no_pendaftaran terakhir berdasarkan tanggal dan fisioterapis
+            $getLatestTerapi = $this->terapiModel->getLatestTherapy($id_fisioterapis, $tanggal);
+            $noPendaftaran = ($getLatestTerapi == null) ? 1 : ($getLatestTerapi['no_pendaftaran'] + 1);
+
+            // Validasi tanggal
+            if (empty($tanggal)) {
+                return redirect()->back()->with('error', 'Tanggal terapi harus diisi!');
             }
 
-            // Data terapi yang akan diinputkan
+            // Data terapi yang akan disimpan
             $terapi = [
                 'no_pendaftaran' => $noPendaftaran,
                 'id_pasien' => $id_pasien,
-                'id_fisioterapis' => $this->request->getPost('id_fisioterapis'),
-                'tanggal' => $this->request->getPost('tanggal'),
+                'id_fisioterapis' => $id_fisioterapis,
+                'tanggal' => $tanggal,
                 'keluhan_utama' => $this->request->getPost('keluhan_utama'),
                 'riwayat_keluhan' => $this->request->getPost('riwayat_keluhan'),
                 'pemeriksaan' => $this->request->getPost('pemeriksaan'),
@@ -111,19 +113,15 @@ class Home extends BaseController
                 'evaluasi' => $this->request->getPost('evaluasi'),
             ];
 
-            // Format tanggal terapi
-            $terapi['tanggal'] = Carbon::now()->format('Y-m-d H:i:s.u');
-
-            // Insert terapi ke database
+            // Simpan data terapi ke database
             $this->terapiModel->insert($terapi);
 
-            // Redirect ke halaman sebelumnya dengan pesan sukses
             return redirect()->back()->with('message', 'Data pasien dan terapi berhasil disimpan!');
         } catch (\Exception $e) {
-            // Jika terjadi error, tangkap dan kembalikan dengan pesan error
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
+
 
     public function pasien()
     {
@@ -400,7 +398,8 @@ class Home extends BaseController
         ]);
     }
 
-    public function data_pasien(){
+    public function data_pasien()
+    {
         $user = auth()->user(); // Ambil user yang login
         $userId = $user->id; // Ambil ID user
         $allTerapi = $this->terapiModel->getAllTerapiWithPasienAndUsersVerify($userId);

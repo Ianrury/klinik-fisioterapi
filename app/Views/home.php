@@ -163,7 +163,7 @@ List Pasien
 
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4">
                     <!-- Tombol Hapus -->
-                    <a href="/kunjungan/delete/<?= $terapi['id'] ?>"
+                    <!-- <a href="/kunjungan/delete/<?= $terapi['id'] ?>"
                         onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?');"
                         class="bg-red-500 hover:bg-red-600 text-white text-base px-4 py-3 rounded-lg text-center flex items-center justify-center transition-all duration-300 shadow-sm hover:shadow">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -172,7 +172,7 @@ List Pasien
                                 clip-rule="evenodd" />
                         </svg>
                         Hapus
-                    </a>
+                    </a> -->
 
                     <!-- Tombol Input Data -->
                     <a href="<?= base_url('/kunjungan/input-data/' . $terapi['id']) ?>"
@@ -187,7 +187,7 @@ List Pasien
                     </a>
 
                     <!-- Tombol Verifikasi -->
-                    <button onclick="window.location.href='/kunjungan/verify/<?= $terapi['id'] ?>'"
+                    <!-- <button onclick="window.location.href='/kunjungan/verify/<?= $terapi['id'] ?>'"
                         class="bg-green-500 hover:bg-green-600 text-white text-base px-4 py-3 rounded-lg text-center flex items-center justify-center transition-all duration-300 shadow-sm hover:shadow">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd"
@@ -195,7 +195,7 @@ List Pasien
                                 clip-rule="evenodd" />
                         </svg>
                         Verifikasi
-                    </button>
+                    </button> -->
 
                     <!-- Tombol Riwayat -->
                     <a href="/kunjungan/riwayat/<?= $terapi['id_pasien'] ?>"

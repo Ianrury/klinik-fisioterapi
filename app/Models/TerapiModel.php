@@ -17,15 +17,17 @@ class TerapiModel extends Model
         $query = $this->select('terapi.*, pasien.nama, pasien.j_kelamin, pasien.alamat, users.username')
             ->join('pasien', 'terapi.id_pasien = pasien.id')
             ->join('users', 'terapi.id_fisioterapis = users.id')
-            ->where('terapi.verifi', false);
+            ->where('terapi.verifi', false)
+            ->where('DATE(terapi.tanggal) <=', date('Y-m-d')); // ⬅️ Tampilkan hanya hari ini & sebelumnya
 
-        // Jika userId bukan 1, tambahkan filter berdasarkan id_fisioterapis
+        // Jika userId bukan admin (id ≠ 1), filter berdasarkan id_fisioterapis
         if ($userId != 1) {
             $query->where('terapi.id_fisioterapis', $userId);
         }
 
         return $query->get()->getResultArray();
     }
+
 
     public function getAllTerapiWithPasienAndUsersdata($userId)
     {
@@ -85,8 +87,8 @@ class TerapiModel extends Model
         $query = $this->select('terapi.*, pasien.nama, pasien.j_kelamin, pasien.alamat, users.username')
             ->join('pasien', 'terapi.id_pasien = pasien.id')
             ->join('users', 'terapi.id_fisioterapis = users.id')
-            ->where('terapi.verifi', false);
-
+            ->where('terapi.verifi', false)
+            ->where('DATE(terapi.tanggal) <=', date('Y-m-d')); // ⬅️ hanya tampilkan hari ini & sebelumnya
 
         // Add search conditions
         $query->groupStart()
@@ -97,7 +99,6 @@ class TerapiModel extends Model
 
         // Apply user filtering
         if ($userId != 1) {
-            // If not admin (assuming user ID 1 is admin)
             $query->where('terapi.id_fisioterapis', $userId);
         }
 
@@ -107,6 +108,7 @@ class TerapiModel extends Model
         // Execute query and return results
         return $query->findAll();
     }
+
 
     public function searchTerapidata($keyword, $userId)
     {
@@ -186,14 +188,17 @@ class TerapiModel extends Model
             ->getResultArray();
     }
 
-    public function getLatestTherapy()
+    public function getLatestTherapy($id_fisoterapis, $waktu)
     {
-        $currentDate = date('Y-m-d');
+        $currentDate = $waktu;
+
         return $this->select('no_pendaftaran')
             ->where("DATE(tanggal)", $currentDate)
+            ->where('id_fisioterapis', $id_fisoterapis) // ⬅️ INI WAJIB!
             ->orderBy('no_pendaftaran', 'DESC')
             ->first();
     }
+
 
     public function getTerapiByNoPendaftaran($id_pasien)
     {
