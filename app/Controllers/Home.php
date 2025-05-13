@@ -113,8 +113,14 @@ class Home extends BaseController
                 'evaluasi' => $this->request->getPost('evaluasi'),
             ];
 
-            // Simpan data terapi ke database
+            // Simpan data terapi
             $this->terapiModel->insert($terapi);
+
+            // Cek apakah tanggal terapi adalah masa depan (booking)
+            $hariIni = date('Y-m-d');
+            if (date('Y-m-d', strtotime($tanggal)) > $hariIni) {
+                return redirect()->back()->with('message', 'Booking waktu untuk pasien berhasil disimpan!');
+            }
 
             return redirect()->back()->with('message', 'Data pasien dan terapi berhasil disimpan!');
         } catch (\Exception $e) {
