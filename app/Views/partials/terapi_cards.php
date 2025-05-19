@@ -125,17 +125,19 @@
 
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4">
                 <!-- Tombol Hapus -->
-                <!-- <a href="/kunjungan/delete/<?= $terapi['id'] ?>"
-                    onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?');"
-                    class="bg-red-500 hover:bg-red-600 text-white text-base px-4 py-3 rounded-lg text-center flex items-center justify-center transition-all duration-300 shadow-sm hover:shadow">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd"
-                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                            clip-rule="evenodd" />
-                    </svg>
-                    Hapus
-                </a> -->
+                <?php if (auth()->user()->inGroup('admin')): ?>
 
+                    <a href="/kunjungan/delete/<?= $terapi['id'] ?>"
+                        onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?');"
+                        class="bg-red-500 hover:bg-red-600 text-white text-base px-4 py-3 rounded-lg text-center flex items-center justify-center transition-all duration-300 shadow-sm hover:shadow">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        Hapus
+                    </a>
+                <?php endif; ?>
                 <!-- Tombol Input Data -->
                 <a href="<?= base_url('/kunjungan/input-data/' . $terapi['id']) ?>"
                     class="bg-[#6C69FF] hover:bg-[#5855e6] text-white text-base px-4 py-3 rounded-lg text-center flex items-center justify-center transition-all duration-300 shadow-sm hover:shadow">
@@ -147,18 +149,18 @@
                     </svg>
                     Input Data
                 </a>
-
-                <!-- Tombol Verifikasi -->
-                <!-- <button onclick="window.location.href='/kunjungan/verify/<?= $terapi['id'] ?>'"
-                    class="bg-green-500 hover:bg-green-600 text-white text-base px-4 py-3 rounded-lg text-center flex items-center justify-center transition-all duration-300 shadow-sm hover:shadow">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd"
-                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                            clip-rule="evenodd" />
-                    </svg>
-                    Verifikasi
-                </button> -->
-
+                <?php if (auth()->user()->inGroup('admin')): ?>
+                    <!-- Tombol Verifikasi -->
+                    <button onclick="window.location.href='/kunjungan/verify/<?= $terapi['id'] ?>'"
+                        class="bg-green-500 hover:bg-green-600 text-white text-base px-4 py-3 rounded-lg text-center flex items-center justify-center transition-all duration-300 shadow-sm hover:shadow">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        Verifikasi
+                    </button>
+                <?php endif; ?>
                 <!-- Tombol Riwayat -->
                 <a href="/kunjungan/riwayat/<?= $terapi['id_pasien'] ?>"
                     class="bg-yellow-500 hover:bg-yellow-600 text-white text-base px-4 py-3 rounded-lg text-center flex items-center justify-center transition-all duration-300 shadow-sm hover:shadow">
